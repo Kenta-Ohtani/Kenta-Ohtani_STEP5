@@ -1,5 +1,5 @@
 // ================================
-// それぞれ使用するDOM取得
+// DOM取得
 // ================================
 const textInput = document.getElementById("textInput");
 const showBtn = document.getElementById("showBtn");
@@ -19,33 +19,22 @@ let addCount = 0;
 const MAX_ROWS = 3;
 
 
-// =====================================
-// 1～5のループ回数を記録
-// =====================================
-let loopCounts = {
-    q1: 0, // 1
-    q2: 0, // 2
-    q3: 0, // 3
-    q4: 0, // 4
-    q5: 0  // 5
-};
-
-// ログ出力用関数
+// ================================
+// 設問7：forループで1～5をログに表示
+// ================================
 function printLoopCounts() {
-    console.log("===== 設問1～5のループ回数 =====");
-    console.log("設問1（表示）：", loopCounts.q1);
-    console.log("設問2（背景色変更）：", loopCounts.q2);
-    console.log("設問3（ハイライト切替）：", loopCounts.q3);
-    console.log("設問4（行追加）：", loopCounts.q4);
-    console.log("設問5（行削除）：", loopCounts.q5);
-    console.log("===============================");
+    console.log("===== 設問7：forループで1～5表示 =====");
+    for (let i = 1; i <= 5; i++) {
+        console.log(i);
+    }
+    console.log("===================================");
 }
 
 
-
 // ================================
-// 設問1
-// 設問3
+// 設問1：表示処理
+// 設問3：highlightトグル
+// 設問4：クリックで行追加（修正）
 // ================================
 showBtn.addEventListener("click", () => {
     const text = textInput.value.trim();
@@ -55,56 +44,52 @@ showBtn.addEventListener("click", () => {
         return;
     }
 
+    // 設問1：表示
     displayArea.textContent = text;
+
+    // 設問3：highlightトグル
     displayArea.classList.toggle("highlight");
 
-    // 設問1 & 設問3 カウント
-    loopCounts.q1++;
-    loopCounts.q3++;
+    // 設問7：ログ（1～5）
     printLoopCounts();
+
+    // 設問4：行追加（クリックで追加に変更）
+    addRow();
 });
 
 
-
 // ================================
-// 設問2
+// 設問2：背景色変更
 // ================================
 bgBtn.addEventListener("click", () => {
     displayArea.style.backgroundColor = colors[colorIndex];
     colorIndex = (colorIndex + 1) % colors.length;
 
-    loopCounts.q2++;
     printLoopCounts();
 });
 
 
-
 // ================================
-// 設問4
-// 設問6
+// 設問4：テーブル行の追加
+// 設問6：最大3件 → 古いデータを削除
 // ================================
 
+// Enterキーで追加
 textInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") addRow();
 });
 
-// 表示ボタンのダブルクリックでも追加できるように（任意）
-showBtn.addEventListener("dblclick", addRow);
-
 function addRow() {
     const text = textInput.value.trim();
-    if (text === "") {
-        alert("入力値が空です。");
-        return;
-    }
+    if (text === "") return;
 
-    // ---- 設問6：最大3件の制限 ----
+    // 3件制限（古い行から削除）
     while (table.rows.length - 1 >= MAX_ROWS) {
-        table.deleteRow(1); // 先頭のデータを削除
+        table.deleteRow(1);
         addCount--;
     }
 
-    // 行の追加
+    // 新規行を追加
     const row = table.insertRow(-1);
     const cellText = row.insertCell(0);
     const cellBtn = row.insertCell(1);
@@ -119,32 +104,27 @@ function addRow() {
     delBtn.addEventListener("click", () => {
         table.deleteRow(row.rowIndex);
         addCount--;
+        countSpan.textContent = addCount;
 
-        loopCounts.q5++;
-        printLoopCounts();
-
-        // 3件未満に戻ったら表示ボタンを戻す
+        // 3件未満になれば表示ボタンをまた表示
         if (addCount < 3) {
             showBtn.style.display = "inline-block";
         }
 
-        countSpan.textContent = addCount;
+        printLoopCounts();
     });
 
     cellBtn.appendChild(delBtn);
 
-    // カウント増加
+    // カウント更新
     addCount++;
     countSpan.textContent = addCount;
 
-    // 3回以上追加すると表示ボタンを非表示
+    // 3件以上になれば表示ボタンを非表示
     if (addCount >= 3) {
         showBtn.style.display = "none";
     }
 
     textInput.value = "";
-
-    // 設問4 カウント
-    loopCounts.q4++;
     printLoopCounts();
 }
